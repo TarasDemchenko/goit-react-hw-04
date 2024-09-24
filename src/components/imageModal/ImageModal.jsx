@@ -1,17 +1,27 @@
 import Modal from "react-modal";
 import s from "./ImageModal.module.css";
+// import { useEffect } from "react";
 Modal.setAppElement("#root");
-const ImageModal = ({ modalIsOpen, openModal, closeModal }) => {
+const ImageModal = ({ modalIsOpen, closeModal, selectedImage }) => {
+  //   useEffect(() => {
+  //     const handleEsc = (e) => {
+  //       if (e.key === "Escape") {
+  //         closeModal();
+  //       }
+  //     };
+  //   });
   return (
-    <div>
-      <button onClick={openModal}></button>
+    <div className={s.overlay}>
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         className={s.modal}
         contentLabel="Example Modal"
       >
-        <button onClick={closeModal}>close</button>
+        {selectedImage && (
+          <img className={s.modalImage} src={selectedImage} alt="Selected" />
+        )}
+        {/* <button onClick={closeModal}>close</button> */}
       </Modal>
     </div>
   );

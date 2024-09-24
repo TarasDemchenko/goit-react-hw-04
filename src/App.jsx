@@ -1,28 +1,41 @@
 import { useEffect, useState } from "react";
-import { fetchImage } from "./services/api";
+import { fetchImage, fetchImageLarge } from "./services/api";
 import ImageGallery from "./components/imageGallery/ImageGallery";
 
 import Loader from "./components/loader/Loader";
 import ErrorMessage from "./components/errorMessage/ErrorMessage";
 import SearchBar from "./components/searchBar/SearchBar";
 import LoadMoreBtn from "./components/loadMoreBtn/LoadMoreBtn";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
+import ImageModal from "./components/imageModal/ImageModal";
 
 const App = () => {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState([]);
   const [error, setError] = useState(false);
-  const [noResults, setNoResults] = useState(false);
-  const [page, setPage] = useState(0);
-  // const [modalIsOpen, setIsOpen] = useState(false);
 
-  // function openModal() {
-  //   setIsOpen(true);
-  // }
-  // function closeModal() {
-  //   setIsOpen(false);
-  // }
+  const [page, setPage] = useState(0);
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const openModal = async (imageId) => {
+    setLoading(true);
+    try {
+      const largeImage = await fetchImageLarge(imageId);
+      setSelectedImage(largeImage);
+      setIsOpen(true);
+    } catch (error) {
+      setError(true);
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  function closeModal() {
+    setIsOpen(false);
+    setSelectedImage(null);
+  }
 
   useEffect(() => {
     if (!query) {
@@ -32,11 +45,9 @@ const App = () => {
       try {
         setError(false);
         setLoading(true);
-        setNoResults(false);
+
         const data = await fetchImage(page, query);
-        if (data.length === 0 && page === 0) {
-          setNoResults(true);
-        }
+
         setImages((prev) => [...prev, ...data]);
       } catch {
         setError(true);
@@ -50,7 +61,7 @@ const App = () => {
   const handleQuery = (topic) => {
     if (topic.trim() === "") {
       toast.error("Please fill the search field.");
-      setNoResults(true);
+
       setImages([]);
       return;
     }
@@ -62,10 +73,14 @@ const App = () => {
   return (
     <div>
       <SearchBar setQuery={handleQuery} />
-      {noResults && <ErrorMessage />}
+      <ImageModal
+        modalIsOpen={modalIsOpen}
+        closeModal={closeModal}
+        selectedImage={selectedImage}
+      />
       {images.length > 0 && (
         <>
-          <ImageGallery images={images} />
+          <ImageGallery openModal={openModal} images={images} />
           <LoadMoreBtn setPage={setPage} />
         </>
       )}
@@ -73,6 +88,7 @@ const App = () => {
       {loading && <Loader />}
 
       {error && <ErrorMessage />}
+      <Toaster />
     </div>
   );
 };
