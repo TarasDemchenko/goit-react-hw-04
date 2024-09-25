@@ -15,7 +15,7 @@ const App = () => {
   const [images, setImages] = useState([]);
   const [error, setError] = useState(false);
 
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(null);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
