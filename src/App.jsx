@@ -67,7 +67,7 @@ const App = () => {
     }
     setQuery(topic);
     setImages([]);
-    setPage(0);
+    setPage(1);
   };
 
   return (

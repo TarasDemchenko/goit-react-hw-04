@@ -1,3 +1,4 @@
+import ImageCard from "../imageCard/ImageCard";
 import s from "./ImageGallery.module.css";
 const ImageGallery = ({ openModal, images }) => {
   return (
@@ -9,9 +10,7 @@ const ImageGallery = ({ openModal, images }) => {
             key={image.id}
             className={s.list}
           >
-            <div>
-              <img src={image.urls.small} className={s.img} />
-            </div>
+            <ImageCard image={image.urls.small} />
           </li>
         ))}
       </ul>
